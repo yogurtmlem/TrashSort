@@ -50,16 +50,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="FormCase2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="FormCase2.Designer.cs">
+      <DependentUpon>FormCase2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGame.Designer.cs">
+      <DependentUpon>FormGame.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="FormGame.resx">
+      <DependentUpon>FormGame.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -71,6 +83,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -85,7 +100,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Image1.bmp" />
+    <None Include="Resources\background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background2.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\banhmi.png" />
@@ -97,6 +115,12 @@
     <None Include="Resources\coca.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\giay1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\giay2.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\giayan.png" />
   </ItemGroup>
   <ItemGroup>
@@ -106,7 +130,34 @@
     <None Include="Resources\hopnhua.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\hopsua1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hopsua2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hopsua3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hopsua4.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\khautrang.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kimloai2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kimloai5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kimloai6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kimloai7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kimloai8.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\muongnia.png" />
@@ -124,10 +175,88 @@
     <None Include="Resources\thucphamthua.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\thungracchatlong.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungracconlai.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungracgiay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungrachopsua.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungrachuuco.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungrackimloai.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungracnhua.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungractaiche.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thungracthuytinh.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\tuinilong.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\xuongca.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\chatlong1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\chatlong2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\chatlong3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hop1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hop2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hop3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hop4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\nhua1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\nhua2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\nhua3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\conlai3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\conlai5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\conlai8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\huuco3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\huuco4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\huuco5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\huuco6.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

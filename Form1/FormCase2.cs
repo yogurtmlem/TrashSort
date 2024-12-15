@@ -1,40 +1,52 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
-using System.IO; // For File operations
+using System.Drawing.Text;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+using System.IO;
+using Form1.Properties;
+using System.Media;
 
 namespace Form1
 {
-    public partial class Form1 : Form
+    public partial class FormCase2 : Form
     {
         private Timer gameTimer;
         private PictureBox trash;
         private int score = 0;
         private int highScore = 0;
-        private int timeLeft = 30;
+        private int timeLeft = 45;
+        private string[] trashTypes = { "chatlong", "kimloai", "thucphamthua", "nhuataiche", "giay", "hopsua", "racthaiconlai" };
         private Random random;
-        private string[] trashTypes = { "Organic", "Inorganic", "Non-recyclable" };
         private string correctBin;
+        private Dictionary<string, string> trashCategoryMapping;
 
-        public Form1()
+        public FormCase2()
         {
             InitializeComponent();
             LoadHighScore();
             InitializeGame();
+
+            gameTimer = new Timer { Interval = 1000 };
+            gameTimer.Tick += GameTimer_Tick;
+            gameTimer.Start();
         }
 
-        private Dictionary<string, string> trashCategoryMapping;
         private void InitializeGame()
         {
-            this.Text = "Trash Sorting Game";
-            this.Size = new Size(800, 600);
-            this.BackColor = Color.White;
+            this.Text = "Trash Sorting Game - Case 2";
+            this.Size = new Size(1200, 800);
+            this.BackgroundImage = Properties.Resources.background2;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
 
             random = new Random();
 
@@ -66,29 +78,56 @@ namespace Form1
                 Location = new Point(20, 100),
                 AutoSize = true
             };
+            lblHighScore.Name = "lblHighScore";  // This makes it accessible by name
             this.Controls.Add(lblHighScore);
 
-            // Trash bins with appropriate images
-            CreateTrashBin("Organic", Properties.Resources.thucphamthua, new Point(100, 350));
-            CreateTrashBin("Inorganic", Properties.Resources.ractaiche, new Point(300, 350));
-            CreateTrashBin("Non-recyclable", Properties.Resources.racconlai, new Point(500, 350));
+            CreateTrashBin("chatlong", Properties.Resources.thungracchatlong, new Point(30, 400));
+            CreateTrashBin("thucphamthua", Properties.Resources.thungrachuuco, new Point(190, 400));
+            CreateTrashBin("kimloai", Properties.Resources.thungrackimloai, new Point(350, 400));
+            CreateTrashBin("nhuataiche", Properties.Resources.thungracnhua, new Point(510, 400));
+            CreateTrashBin("giay", Properties.Resources.thungracgiay, new Point(670, 400));
+            CreateTrashBin("hopsua", Properties.Resources.thungrachopsua, new Point(830, 400));
+            CreateTrashBin("racthaiconlai", Properties.Resources.thungracconlai, new Point(990, 400));
 
-            // Initialize the trash category mapping
             trashCategoryMapping = new Dictionary<string, string>
-    {
-            { "tao", "Organic" },
-{ "xuongca", "Organic" },
-{ "banhmi", "Organic" },
-{ "giaybao", "Inorganic" },
-{ "coca", "Inorganic" },
-{ "binhnuoc", "Inorganic" },
-{ "tuinilong", "Non-recyclable" },
-{ "giayan", "Non-recyclable" },
-{ "muongnia", "Non-recyclable" },
-{ "hopnhua", "Non-recyclable" },
-{ "khautrang", "Non-recyclable" }
-    };
-            // Falling trash
+            {
+                { "tao", "thucphamthua" },
+            { "xuongca", "thucphamthua" },
+            { "banhmi", "thucphamthua" },
+            { "huuco3", "thucphamthua" },
+            { "huuco4", "thucphamthua" },
+            { "huuco5", "thucphamthua" },
+            { "huuco6", "thucphamthua" },
+            { "giaybao", "giay" },
+            { "giay1", "giay" },
+            { "giay2", "giay" },
+            { "coca", "kimloai" },
+            { "kimloai2", "kimloai" },
+            { "kimloai5", "kimloai" },
+            { "kimloai6", "kimloai" },
+            { "kimloai7", "kimloai" },
+            { "kimloai8", "kimloai" },
+            { "nhua1", "nhuataiche" },
+            { "nhua2", "nhuataiche" },
+            { "nhua3", "nhuataiche" },
+            { "binhnuoc", "nhuataiche" },
+            { "chatlong1", "chatlong" },
+            { "chatlong2", "chatlong" },
+            { "chatlong3", "chatlong" },
+            { "hop1", "hopsua" },
+            { "hop2", "hopsua" },
+            { "hop3", "hopsua" },
+            { "hop4", "hopsua" },
+            { "tuinilong", "racthaiconlai" },
+            { "giayan", "racthaiconlai" },
+            { "muongnia", "racthaiconlai" },
+            { "hopnhua", "racthaiconlai" },
+            { "khautrang", "racthaiconlai" },
+            { "conlai3", "racthaiconlai" },
+            { "conlai5", "racthaiconlai" },
+            { "conlai8", "racthaiconlai" }
+            };
+
             trash = new PictureBox
             {
                 Size = new Size(50, 50),
@@ -96,18 +135,11 @@ namespace Form1
             };
             this.Controls.Add(trash);
 
-            // Game Timer
-            gameTimer = new Timer
-            {
-                Interval = 1000
-            };
-            gameTimer.Tick += GameTimer_Tick;
-            gameTimer.Start();
+            AssignNewTrash();
 
             this.KeyDown += MainForm_KeyDown;
-            AssignNewTrash();
-        }
 
+        }
         private Image ResizeImageMaintainAspect(Image img, int maxWidth, int maxHeight)
         {
             int originalWidth = img.Width;
@@ -133,18 +165,17 @@ namespace Form1
             return resizedImg;
         }
 
-
         private void CreateTrashBin(string name, Image image, Point location)
         {
             PictureBox bin = new PictureBox
             {
-                Size = new Size(200, 300), // Increased size for bigger trash cans
+                Size = new Size(200, 300),
                 Location = location,
-                Image = ResizeImageMaintainAspect(image, 200, 300), // Adjust image size proportionally
+                Image = ResizeImageMaintainAspect(image, 200, 300),
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 Tag = name,
+                BackColor = Color.Transparent
             };
-
             this.Controls.Add(bin);
         }
 
@@ -160,6 +191,7 @@ namespace Form1
                 trash.Image = ResizeImageMaintainAspect(trashImage, 100, 100);
                 trash.Size = new Size(100, 100);
                 trash.SizeMode = PictureBoxSizeMode.StretchImage;
+                trash.BackColor = Color.Transparent;
             }
             else
             {
@@ -170,28 +202,33 @@ namespace Form1
             trash.Left = random.Next(100, this.Width - trash.Width);
             trash.Top = 50;
         }
-
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.A && trash.Left > 0)
             {
-                trash.Left -= 20;
+                trash.Left -= 40;
             }
             else if (e.KeyCode == Keys.D && trash.Right < this.Width)
             {
-                trash.Left += 20;
+                trash.Left += 40;
             }
             else if (e.KeyCode == Keys.S)
             {
-                trash.Top += 20;
+                trash.Top += 40;
                 if (trash.Bounds.Bottom >= this.Height - 200) // Near bins
                 {
                     foreach (Control ctrl in this.Controls)
                     {
                         if (ctrl is PictureBox bin && trash.Bounds.IntersectsWith(bin.Bounds))
                         {
-                            CheckCorrectBin(bin.Tag.ToString());
+                            if (bin.Tag != null) // Check if Tag is not null
+                            {
+                                CheckCorrectBin(bin.Tag.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Error: Tag not set for a bin PictureBox.");
+                            }
                             break;
                         }
                     }
@@ -200,6 +237,38 @@ namespace Form1
                     AssignNewTrash();
                 }
             }
+        }
+
+        private void LoadHighScore()
+        {
+            try
+            {
+                if (File.Exists("highscore_case2.txt"))
+                {
+                    highScore = int.Parse(File.ReadAllText("highscore_case2.txt"));
+                }
+            }
+            catch
+            {
+                highScore = 0;
+            }
+        }
+
+        private void SaveHighScore()
+        {
+            if (score > highScore)
+            {
+                highScore = score;
+                File.WriteAllText("highscore_case2.txt", highScore.ToString());
+            }
+        }
+
+        private void ResetGame()
+        {
+            score = 0;
+            timeLeft = 45;
+            AssignNewTrash();
+            gameTimer.Start();
         }
 
         private async void CheckCorrectBin(string bin)
@@ -228,39 +297,52 @@ namespace Form1
 
         private void GameTimer_Tick(object sender, EventArgs e)
         {
-            timeLeft--;
-            this.Controls["lblTime"].Text = $"Time: {timeLeft}s";
-
             if (timeLeft <= 0)
             {
                 gameTimer.Stop();
-                MessageBox.Show($"Time's up! Final Score: {score}");
-                SaveHighScore();
-                this.Close();
-            }
-        }
 
-        private void LoadHighScore()
-        {
-            try
-            {
-                if (File.Exists("highscore.txt"))
+                // Check if the current score is higher than the high score
+                if (score > highScore)
                 {
-                    highScore = int.Parse(File.ReadAllText("highscore.txt"));
+                    highScore = score;  // Update the high score
+                    SaveHighScore();    // Save the new high score
+                }
+
+                // Update the high score label
+                this.Controls["lblHighScore"].Text = $"High Score: {highScore}";
+
+
+                // Close the form (exit the game window)
+                if (score >= 70)
+                {
+                    MessageBox.Show($"Time's up! Your score is {score}");
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Score below 70. Restarting Round 2.");
+                    RestartGame();
                 }
             }
-            catch
+            else
             {
-                highScore = 0;
+                timeLeft--;
+                this.Controls["lblTime"].Text = $"Time: {timeLeft}s";
             }
+        }
+        private void RestartGame()
+        {
+            score = 0;
+            timeLeft = 45;
+            this.Controls["lblScore"].Text = "Score: 0";
+            this.Controls["lblTime"].Text = "Time: 45s";
+            gameTimer.Start();
         }
 
-        private void SaveHighScore()
-        {
-            if (score > highScore)
-            {
-                File.WriteAllText("highscore.txt", score.ToString());
-            }
-        }
+
     }
+
 }
+
+
+
