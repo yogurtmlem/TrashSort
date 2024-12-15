@@ -80,7 +80,7 @@ namespace TrashSort
 
         private void BtnVaoGame_Click(object sender, EventArgs e)
         {
-            FormGame gameForm = new FormGame(); // Assuming FormGame is implemented as provided.
+            Form1.Form1 gameForm = new Form1.Form1(); // Assuming FormGame is implemented as provided.
             this.Hide();
             gameForm.ShowDialog();
             
