@@ -327,7 +327,7 @@ namespace Form1
                 }
 
                 // Đợi 500ms để người chơi nhìn thấy phản hồi.
-                await Task.Delay(3000);
+                await Task.Delay(500);
 
                 // Đặt lại màu nền của thùng.
                 binControl.BackColor = Color.Transparent;
