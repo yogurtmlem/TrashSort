@@ -290,7 +290,7 @@ namespace Form1
 
 
 
-        private void CheckAnswer(string selectedAnswer, int questionIndex)
+        /*private void CheckAnswer(string selectedAnswer, int questionIndex)
         {
             if (timeLeft == 0) return; // Don't process if time is up
 
@@ -338,15 +338,66 @@ namespace Form1
                 gameTimer.Start();  // Restart the timer
                 ShowQuizQuestion(currentQuizQuestion);  // Show next question
             }
+        }*/
+
+        private void CheckAnswer(string selectedAnswer, int questionIndex)
+        {
+            if (timeLeft == 0) return; // Don't process if time is up
+
+            // Find the score label control
+            Label lblScore = this.Controls.Find("lblScore", true).FirstOrDefault() as Label;
+
+            // Check if the answer is correct
+            if (selectedAnswer == correctAnswers[currentQuizQuestion])
+            {
+                quizScore++; // Increment the score if the answer is correct
+                MessageBox.Show("Đáp án đúng! 👍", "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Update the score label dynamically
+                if (lblScore != null)
+                {
+                    lblScore.Text = $"Score: {quizScore}";
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Sai rồi! 😞 Đáp án đúng là: {correctAnswers[currentQuizQuestion]}", "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            // Set answered flag to true to prevent multiple answers for the same question
+            answered = true;
+
+            // Stop the timer and proceed to the next question
+            gameTimer.Stop();
+
+            // Move to the next question
+            currentQuizQuestion++;
+
+            // If there are no more questions, evaluate the score
+            if (currentQuizQuestion >= questions.Length)
+            {
+                // After all questions, check if the score is enough to proceed
+                if (quizScore >= 3)
+                {
+                    MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    StartTrashSortingGame(); // Proceed to Trash Sorting
+                }
+                else
+                {
+                    MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    StartQuiz(); // Restart the quiz
+                }
+
+                quizScore = 0; // Reset score for the next round
+            }
+            else
+            {
+                // Show the next question after a short delay
+                timeLeft = 20; // Reset time for the next question
+                gameTimer.Start(); // Restart the timer
+                ShowQuizQuestion(currentQuizQuestion); // Show next question
+            }
         }
-
-
-
-
-
-
-
-
 
 
 

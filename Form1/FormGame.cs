@@ -732,6 +732,29 @@ namespace Form1
             }
         }
 
+        /*private void LoadHighScore()
+        {
+            try
+            {
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscore.txt");
+
+                if (File.Exists(filePath))
+                {
+                    highScore = int.Parse(File.ReadAllText(filePath));
+                }
+                else
+                {
+                    // Create the file if it doesn't exist
+                    File.WriteAllText(filePath, "0");
+                    highScore = 0;
+                }
+            }
+            catch
+            {
+                highScore = 0;
+            }
+        }*/
+
         private void LoadHighScore()
         {
             try
@@ -740,30 +763,35 @@ namespace Form1
                 {
                     highScore = int.Parse(File.ReadAllText("highscore.txt"));
                 }
+                else
+                {
+                    //Tạo file nếu file chưa tồn tại 
+                    File.WriteAllText("highscore.txt", "0");
+                    highScore = 0;
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                MessageBox.Show("Could not read high scores: " + ex);
                 highScore = 0;
             }
         }
 
         private void SaveHighScore()
         {
-            if (score > highScore)
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscore.txt");
+
+            try
             {
-                File.WriteAllText("highscore.txt", score.ToString());
+                    highScore = score;
+                File.WriteAllText(filePath, highScore.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving high score: {ex.Message}");
             }
         }
 
-  
-
-        private void ResetGame()
-        {
-            score = 0; // Reset điểm số
-            timeLeft = 30; // Reset thời gian
-            AssignNewTrash();  // Tạo lại rác mới
-            gameTimer.Start();  // Khởi động lại game
-        }
 
         private async void CheckCorrectBin(string bin)
         {
