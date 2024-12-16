@@ -136,45 +136,6 @@ namespace Form1
             CreateTrashBin("hopsua", Properties.Resources.thungrachopsua, new Point(1030, 600));
             CreateTrashBin("racthaiconlai", Properties.Resources.thungracconlai, new Point(1230, 600));
 
-            /*trashCategoryMapping = new Dictionary<string, string>
-            {
-                { "tao", "thucphamthua" },
-            { "xuongca", "thucphamthua" },
-            { "banhmi", "thucphamthua" },
-            { "huuco3", "thucphamthua" },
-            { "huuco4", "thucphamthua" },
-            { "huuco5", "thucphamthua" },
-            { "huuco6", "thucphamthua" },
-            { "giaybao", "giay" },
-            { "giay1", "giay" },
-            { "giay2", "giay" },
-            { "coca", "kimloai" },
-            { "kimloai2", "kimloai" },
-            { "kimloai5", "kimloai" },
-            { "kimloai6", "kimloai" },
-            { "kimloai7", "kimloai" },
-            { "kimloai8", "kimloai" },
-            { "nhua1", "nhuataiche" },
-            { "nhua2", "nhuataiche" },
-            { "nhua3", "nhuataiche" },
-            { "binhnuoc", "nhuataiche" },
-            { "chatlong1", "chatlong" },
-            { "chatlong2", "chatlong" },
-            { "chatlong3", "chatlong" },
-            { "hop1", "hopsua" },
-            { "hop2", "hopsua" },
-            { "hop3", "hopsua" },
-            { "hop4", "hopsua" },
-            { "tuinilong", "racthaiconlai" },
-            { "giayan", "racthaiconlai" },
-            { "muongnia", "racthaiconlai" },
-            { "hopnhua", "racthaiconlai" },
-            { "khautrang", "racthaiconlai" },
-            { "conlai3", "racthaiconlai" },
-            { "conlai5", "racthaiconlai" },
-            { "conlai8", "racthaiconlai" }
-            };*/
-
             trash = new PictureBox
             {
                 Size = new Size(50, 50),
@@ -241,24 +202,6 @@ namespace Form1
 
         private void AssignNewTrash()
         {
-            /*var randomTrash = trashCategoryMapping.ElementAt(random.Next(trashCategoryMapping.Count));
-            string trashImageName = randomTrash.Key;
-            correctBin = randomTrash.Value;
-
-            Image trashImage = (Image)Properties.Resources.ResourceManager.GetObject(trashImageName);
-            if (trashImage != null)
-            {
-                trash.Image = ResizeImageMaintainAspect(trashImage, 100, 100);
-                trash.Size = new Size(100, 100);
-                trash.SizeMode = PictureBoxSizeMode.StretchImage;
-                trash.BackColor = Color.Transparent;
-            }
-            else
-            {
-                MessageBox.Show($"Trash image not found for: {trashImageName}");
-                return;
-            }*/
-
             // Lấy một chỉ số ngẫu nhiên từ mảng đa chiều
             int row = random.Next(0, trashItems.GetLength(0)); // Chọn hàng ngẫu nhiên
             int col = random.Next(0, trashItems.GetLength(1)); // Chọn cột ngẫu nhiên

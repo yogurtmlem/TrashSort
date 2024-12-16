@@ -280,7 +280,7 @@ namespace Form1
             try //Xử lý ngoại lệ
             {
                     highScore = score;
-                File.WriteAllText(filePath, highScore.ToString()); //Sử dụng file lưu trữ dữ liệu để lưu điểm cao
+                File.WriteAllText(filePath, highScore.ToString()); //Sử dụng file lưu trữ dữ liệu để lưu điểm cao, dùng System.IO.File
             }
             catch (Exception ex)
             {
