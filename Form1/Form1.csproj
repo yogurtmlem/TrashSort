@@ -270,5 +270,8 @@
   <ItemGroup>
     <None Include="Resources\huuco2.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\puzzle-game-loop-bright-casual-video-game-music-249201.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

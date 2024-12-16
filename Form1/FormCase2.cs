@@ -29,7 +29,6 @@ namespace Form1
         private string[] trashTypes = { "chatlong", "kimloai", "thucphamthua", "nhuataiche", "giay", "hopsua", "racthaiconlai" };// Danh sách các loại rác có thể xuất hiện trong trò chơi.
         private Random random;// Sinh số ngẫu nhiên để chọn vị trí và loại rác.
         private string correctBin;// Thùng rác đúng cần phân loại cho rác hiện tại.
-        //private Dictionary<string, string> trashCategoryMapping;
 
         // Lớp TrashItem để quản lý tên rác và thùng chứa
         public class TrashItem
