@@ -17,6 +17,7 @@ namespace Form1
         private SoundPlayer backgroundMusicPlayer;
         //PHẦN QUIZ
         private Label lblTime; // Nhãn hiển thị thời gian còn lại
+        private Label lblScore; // Thêm biến thành viên để lưu tham chiếu
         private int timeLeft = 20; // Biến lưu thời gian còn lại (giây)
         private Timer gameTimer; // Đồng hồ đếm ngược
         int currentQuizQuestion = 0; // Biến đếm câu hỏi
@@ -76,7 +77,7 @@ namespace Form1
             {
                 // Khởi tạo các thành phần giao diện cho câu hỏi
                 Form quizForm = this;
-                quizForm.Width = 1000;
+                quizForm.Width = 800;
                 quizForm.Height = 600;
                 quizForm.Text = "Quiz";
 
@@ -91,6 +92,7 @@ namespace Form1
                 questionLabel.Location = new Point(20, 20);
                 questionLabel.AutoSize = true;
                 questionLabel.ForeColor = Color.Black;
+                questionLabel.TextAlign = ContentAlignment.MiddleCenter;
                 panel.Controls.Add(questionLabel);
 
                 // Khởi tạo các nút cho các đáp án
@@ -130,6 +132,10 @@ namespace Form1
                 answerD.Font = new Font("Arial", 10, FontStyle.Bold);
                 answerD.Click += (sender, e) => CheckAnswer("D", questionIndex);
                 panel.Controls.Add(answerD);
+
+                // Đảm bảo không bị trùng lặp mỗi lần resize
+                quizForm.Resize += (sender, e) => UpdateLayout();
+
             }
 
             // Cập nhật nội dung câu hỏi và các đáp án
@@ -138,7 +144,24 @@ namespace Form1
             answerB.Text = answers[questionIndex, 1];
             answerC.Text = answers[questionIndex, 2];
             answerD.Text = answers[questionIndex, 3];
+
+            // Cập nhật vị trí lần đầu
+            UpdateLayout();
         }
+
+        // Phương thức cập nhật lại vị trí các thành phần
+        private void UpdateLayout()
+        {
+            // Cập nhật vị trí của câu hỏi
+            questionLabel.Location = new Point((panel.Width - questionLabel.Width) / 2, 50);  // Căn giữa câu hỏi
+
+            // Cập nhật vị trí của các đáp án
+            answerA.Location = new Point((panel.Width - answerA.Width) / 2, 120);  // Căn giữa câu A
+            answerB.Location = new Point((panel.Width - answerB.Width) / 2, 180);  // Căn giữa câu B
+            answerC.Location = new Point((panel.Width - answerC.Width) / 2, 240);  // Căn giữa câu C
+            answerD.Location = new Point((panel.Width - answerD.Width) / 2, 300);  // Căn giữa câu D
+        }
+
         private void InitializeGame()
         {
             // Thiết lập giao diện trò chơi ban đầu
@@ -148,15 +171,17 @@ namespace Form1
             {
                 Text = $"Time: {timeLeft}s",
                 Font = new Font("Arial", 16),
-                Location = new Point(20, 20),
+                Location = new Point(20, 10),
                 AutoSize = true
             };
+            lblTime.Name = "lblTime";
+            this.Controls.Add(lblTime);
 
-            Label lblScore = new Label
+            lblScore = new Label
             {
                 Text = $"Score: {quizScore}",
                 Font = new Font("Arial", 16),
-                Location = new Point(20, 80),
+                Location = new Point(20, 120),
                 AutoSize = true
             };
             lblScore.Name = "lblScore";
@@ -176,7 +201,11 @@ namespace Form1
             gameTimer.Start();
         }
 
-
+        private void UpdateUI()
+        {
+            this.Controls["lblTime"].Text = $"Time: {timeLeft}s";
+            this.Controls["lblScore"].Text = $"Score: {quizScore}";
+        }
 
 
 
@@ -209,12 +238,12 @@ namespace Form1
                     // Kiểm tra điểm sau khi hết câu hỏi
                     if (quizScore >= 50)
                     {
-                        MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length * 10}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         StartTrashSortingGame();  //Chạy Trash Sorting
                     }
                     else
                     {
-                        MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length * 10}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         StartQuiz();  //Bắt đầu lại quiz
                     }
 
@@ -263,6 +292,9 @@ namespace Form1
             // Đặt cờ answered là true nhằm ngăn chặn việc trả lời nhiều lần cho cùng một câu hỏi
             answered = true;
 
+            // Cập nhật nhãn lblScore
+            lblScore.Text = $"Score: {quizScore}";
+
             // Dừng đếm giờ và chuyển qua câu tiếp theo
             gameTimer.Stop();
 
@@ -276,12 +308,12 @@ namespace Form1
                 // Sau khi trả lời hết câu hỏi, kiểm tra điểm có đủ điều kiện để qua màn tiếp theo không
                 if (quizScore >= 50)
                 {
-                    MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length * 10}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     StartTrashSortingGame();  // Chuyển qua màn Trash Sorting
                 }
                 else
                 {
-                    MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length * 10}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     StartQuiz();  // Bắt đầu lại quiz
                 }
 
