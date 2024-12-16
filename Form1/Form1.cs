@@ -1,19 +1,13 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
-using System.Drawing.Text;
+using System.IO; // For File operations
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.IO;
-using Form1.Properties;
 
 namespace Form1
 {
@@ -27,15 +21,15 @@ namespace Form1
         int quizScore = 0; // Điểm cho phần Quiz
         string[] questions =
             {
-          "Câu hỏi 1: Bạn đang cần đóng hàng gửi chuyển phát qua đường bưu điện. \n Bạn nên chọn vật dụng nào để tái sử dụng và giảm phát thải nhất?",
+          "Câu hỏi 1: Bạn đang cần đóng hàng gửi chuyển phát qua đường bưu điện. Bạn nên chọn vật dụng nào để tái sử dụng và giảm phát thải nhất?",
          "Câu hỏi 2: Đâu là những thói quen không nên làm, vì sẽ gây lãng phí điện?",
-         "Câu hỏi 3: Dùng để chế tạo túi nylon, lọ hóa chất. \n Không được dùng trong lò vi sóng, độ bền kém",
-         "Câu hỏi 4: Đố bạn loại nhựa nào có các đặc điểm sau đây: rất độc hại, rẻ tiền, \n dùng để sản xuất vật dụng đựng hóa chất hay bình đựng nước",
-         "Câu hỏi 5: Rác thải điện tử là một vấn đề nghiêm trọng hiện nay. Bạn có biết lượng rác \n thải điện tử mỗi năm bị thải ra trên toàn cầu là bao nhiêu không?",
-         "Câu hỏi 6: Bạn đang ở siêu thị và mua các mặt hàng sau đây (rau, cà tím, nấm, cà rốt). \n Bạn hãy lựa chọn cách đựng các món hàng đã mua để giảm thiểu phát thải?",
-         "Câu hỏi 7: iPhone 16 được ra mắt trong thời gian tới, bạn là \n người yêu thích công nghệ và có đủ tiền để mua, bạn sẽ làm gì?",
-         "Câu hỏi 8: Bạn nên sử dụng thìa, dĩa nhựa dùng 1 lần để \n giảm phát thải trong các hoạt động tập thể nào?",
-         "Câu hỏi 9: Bạn nghĩ đâu KHÔNG PHẢI là cách làm hữu hiệu nhất để giảm thiểu \n rác thải nhựa từ vỏ chai đựng các chất tẩy rửa?",
+         "Câu hỏi 3: Dùng để chế tạo túi nylon, lọ hóa chất. Không được dùng trong lò vi sóng, độ bền kém",
+         "Câu hỏi 4: Đố bạn loại nhựa nào có các đặc điểm sau đây: rất độc hại, rẻ tiền, dùng để sản xuất vật dụng đựng hóa chất hay bình đựng nước",
+         "Câu hỏi 5: Rác thải điện tử là một vấn đề nghiêm trọng hiện nay. Bạn có biết lượng rác thải điện tử mỗi năm bị thải ra trên toàn cầu là bao nhiêu không?",
+         "Câu hỏi 6: Bạn đang ở siêu thị và mua các mặt hàng sau đây (rau, cà tím, nấm, cà rốt). Bạn hãy lựa chọn cách đựng các món hàng đã mua để giảm thiểu phát thải?",
+         "Câu hỏi 7: iPhone 16 được ra mắt trong thời gian tới, bạn là người yêu thích công nghệ và có đủ tiền để mua, bạn sẽ làm gì?",
+         "Câu hỏi 8: Bạn nên sử dụng thìa, dĩa nhựa dùng 1 lần để giảm phát thải trong các hoạt động tập thể nào?",
+         "Câu hỏi 9: Bạn nghĩ đâu KHÔNG PHẢI là cách làm hữu hiệu nhất để giảm thiểu rác thải nhựa từ vỏ chai đựng các chất tẩy rửa?",
          "Câu hỏi 10: Bạn hãy cho biết, hành động nào làm pin sạc mau hư? ",
 
      };
@@ -60,20 +54,22 @@ namespace Form1
         private Button answerA, answerB, answerC, answerD;
         private int currentQuestionIndex = 0;
 
+
         public Form1()
         {
             //PHẦN QUIZ
             InitializeComponent();
             InitializeGame();
             StartQuiz();
-        }
 
+
+        }
         private void ShowQuizQuestion(int questionIndex)
         {
             if (questionLabel == null)
             {
                 Form quizForm = this;
-                quizForm.Width = 800;
+                quizForm.Width = 400;
                 quizForm.Height = 500;
                 quizForm.Text = "Quiz";
 
@@ -149,7 +145,7 @@ namespace Form1
             {
                 Text = $"Score: {quizScore}",
                 Font = new Font("Arial", 16),
-                Location = new Point(20, 80),
+                Location = new Point(20, 60),
                 AutoSize = true
             };
             lblScore.Name = "lblScore";
@@ -290,7 +286,7 @@ namespace Form1
 
 
 
-        /*private void CheckAnswer(string selectedAnswer, int questionIndex)
+        private void CheckAnswer(string selectedAnswer, int questionIndex)
         {
             if (timeLeft == 0) return; // Don't process if time is up
 
@@ -314,88 +310,27 @@ namespace Form1
             // Move to the next question
             currentQuizQuestion++;
 
-            // If there are no more questions, evaluate the score
-            if (currentQuizQuestion >= questions.Length)
+            // Kiểm tra điều kiện để kết thúc Quiz
+            if (quizScore >= 3)
             {
-                // After all questions, check if the score is enough to proceed
-                if (quizScore >= 3)
-                {
-                    MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    StartTrashSortingGame();  // Proceed to Trash Sorting
-                }
-                else
-                {
-                    MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    StartQuiz();  // Restart the quiz
-                }
-
-                quizScore = 0;  // Reset score for the next round
+                // Nếu đạt đủ điểm (3 điểm), chuyển sang Trash Sorting Game
+                MessageBox.Show($"Chúc mừng! Bạn đã đạt đủ điểm: {quizScore}/{questions.Length}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                StartTrashSortingGame();  // Proceed to Trash Sorting
+                quizScore = 0;  // Reset score cho vòng tiếp theo
+            }
+            else if (currentQuizQuestion >= questions.Length)
+            {
+                // Nếu đã hết câu hỏi nhưng không đủ điểm, cho chơi lại
+                MessageBox.Show($"Bạn đã hoàn thành nhưng chỉ đạt {quizScore}/{questions.Length}. Hãy thử lại!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                StartQuiz();  // Restart the quiz
+                quizScore = 0;  // Reset score cho vòng tiếp theo
             }
             else
             {
-                // Show the next question after a short delay
-                timeLeft = 20;  // Reset time for the next question
-                gameTimer.Start();  // Restart the timer
-                ShowQuizQuestion(currentQuizQuestion);  // Show next question
-            }
-        }*/
-
-        private void CheckAnswer(string selectedAnswer, int questionIndex)
-        {
-            if (timeLeft == 0) return; // Don't process if time is up
-
-            // Find the score label control
-            Label lblScore = this.Controls.Find("lblScore", true).FirstOrDefault() as Label;
-
-            // Check if the answer is correct
-            if (selectedAnswer == correctAnswers[currentQuizQuestion])
-            {
-                quizScore++; // Increment the score if the answer is correct
-                MessageBox.Show("Đáp án đúng! 👍", "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Update the score label dynamically
-                if (lblScore != null)
-                {
-                    lblScore.Text = $"Score: {quizScore}";
-                }
-            }
-            else
-            {
-                MessageBox.Show($"Sai rồi! 😞 Đáp án đúng là: {correctAnswers[currentQuizQuestion]}", "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            // Set answered flag to true to prevent multiple answers for the same question
-            answered = true;
-
-            // Stop the timer and proceed to the next question
-            gameTimer.Stop();
-
-            // Move to the next question
-            currentQuizQuestion++;
-
-            // If there are no more questions, evaluate the score
-            if (currentQuizQuestion >= questions.Length)
-            {
-                // After all questions, check if the score is enough to proceed
-                if (quizScore >= 3)
-                {
-                    MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    StartTrashSortingGame(); // Proceed to Trash Sorting
-                }
-                else
-                {
-                    MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    StartQuiz(); // Restart the quiz
-                }
-
-                quizScore = 0; // Reset score for the next round
-            }
-            else
-            {
-                // Show the next question after a short delay
-                timeLeft = 20; // Reset time for the next question
-                gameTimer.Start(); // Restart the timer
-                ShowQuizQuestion(currentQuizQuestion); // Show next question
+                // Nếu chưa đủ điểm và vẫn còn câu hỏi, tiếp tục
+                timeLeft = 20;  // Reset thời gian cho câu hỏi tiếp theo
+                gameTimer.Start();  // Khởi động lại bộ đếm thời gian
+                ShowQuizQuestion(currentQuizQuestion);  // Hiển thị câu hỏi tiếp theo
             }
         }
 
@@ -414,5 +349,7 @@ namespace Form1
             FormGame trashSortingForm = new FormGame();
             trashSortingForm.Show();  // Hiển thị game phân loại rác
         }
+
+
     }
 }

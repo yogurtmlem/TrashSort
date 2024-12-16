@@ -15,42 +15,89 @@ using System.Xml.Serialization;
 using System.IO;
 using Form1.Properties;
 using System.Media;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Form1
 {
     public partial class FormCase2 : Form
     {
-        private Timer gameTimer;
-        private PictureBox trash;
-        private int score = 0;
-        private int highScore = 0;
-        private int timeLeft = 45;
-        private string[] trashTypes = { "chatlong", "kimloai", "thucphamthua", "nhuataiche", "giay", "hopsua", "racthaiconlai" };
-        private Random random;
-        private string correctBin;
-        private Dictionary<string, string> trashCategoryMapping;
+        private Timer gameTimer;// Bộ đếm thời gian để quản lý thời gian chơi game.
+        private PictureBox trash;// Hiển thị hình ảnh rác trên màn hình bằng PictureBox.
+        private int score = 0;// Điểm số hiện tại của người chơi.
+        private int highScore = 0;// Điểm số cao nhất được lưu từ trước đó.
+        private int timeLeft = 45;// Thời gian còn lại của trò chơi, tính bằng giây.
+        private string[] trashTypes = { "chatlong", "kimloai", "thucphamthua", "nhuataiche", "giay", "hopsua", "racthaiconlai" };// Danh sách các loại rác có thể xuất hiện trong trò chơi.
+        private Random random;// Sinh số ngẫu nhiên để chọn vị trí và loại rác.
+        private string correctBin;// Thùng rác đúng cần phân loại cho rác hiện tại.
+        //private Dictionary<string, string> trashCategoryMapping;
 
-        public FormCase2()
+        // Lớp TrashItem để quản lý tên rác và thùng chứa
+        public class TrashItem
+        {
+            public string Name { get; set; }
+            public string Bin { get; set; }
+
+            public TrashItem(string name, string bin)
+            {
+                Name = name;
+                Bin = bin;
+            }
+        }
+
+        // Mảng đa chiều để lưu các loại rác và thùng rác tương ứng
+        private TrashItem[,] trashItems = new TrashItem[,]
+        {
+        { new TrashItem("tao", "thucphamthua"), new TrashItem("xuongca", "thucphamthua") },
+        { new TrashItem("banhmi", "thucphamthua"), new TrashItem("huuco3", "thucphamthua") },
+        { new TrashItem("huuco4", "thucphamthua"), new TrashItem("huuco5", "thucphamthua") },
+        { new TrashItem("huuco6", "thucphamthua"), new TrashItem("giaybao", "giay") },
+        { new TrashItem("giay1", "giay"), new TrashItem("giay2", "giay") },
+
+        { new TrashItem("coca", "kimloai"), new TrashItem("kimloai2", "kimloai") },
+        { new TrashItem("kimloai5", "kimloai"), new TrashItem("kimloai6", "kimloai") },
+        { new TrashItem("kimloai7", "kimloai"), new TrashItem("kimloai8", "kimloai") },
+
+        { new TrashItem("nhua1", "nhuataiche"), new TrashItem("nhua2", "nhuataiche") },
+        { new TrashItem("nhua3", "nhuataiche"), new TrashItem("binhnuoc", "nhuataiche") },
+
+        { new TrashItem("chatlong1", "chatlong"), new TrashItem("chatlong2", "chatlong") },
+        { new TrashItem("chatlong3", "chatlong"), new TrashItem("hop1", "hopsua") },
+        { new TrashItem("hop2", "hopsua"), new TrashItem("hop3", "hopsua") },
+        { new TrashItem("hop4", "hopsua"), new TrashItem("tuinilong", "racthaiconlai") },
+        { new TrashItem("giayan", "racthaiconlai"), new TrashItem("muongnia", "racthaiconlai") },
+        { new TrashItem("hopnhua", "racthaiconlai"), new TrashItem("khautrang", "racthaiconlai") },
+        { new TrashItem("conlai3", "racthaiconlai"), new TrashItem("conlai5", "racthaiconlai") },
+        { new TrashItem("conlai8", "racthaiconlai"), null } // Phần tử cuối cùng có thể để null nếu không có rác nào đi kèm
+        };
+
+        public FormCase2() //Khởi tạo trò chơi và bộ đếm thời gian.
         {
             InitializeComponent();
-            LoadHighScore();
-            InitializeGame();
+            LoadHighScore();// Tải điểm cao từ file lưu trữ.
+            InitializeGame();// Khởi tạo trò chơi.
 
-            gameTimer = new Timer { Interval = 1000 };
+            gameTimer = new Timer { Interval = 1000 };// Khởi tạo Timer với thời gian lặp mỗi giây.
             gameTimer.Tick += GameTimer_Tick;
-            gameTimer.Start();
+            gameTimer.Start();// Bắt đầu Timer.
         }
 
         private void InitializeGame()
         {
-            this.Text = "Trash Sorting Game - Case 2";
-            this.Size = new Size(1200, 800);
-            this.BackgroundImage = Properties.Resources.background2;
+            // Show the "Hello!" message box when the game starts
+            MessageBox.Show("Hello!");
+
+            this.Text = "Lớp Chồi - Vòng 3"; // Tiêu đề của cửa sổ.
+            this.Size = new Size(1800, 1000); // Kích thước cửa sổ.
+
+            this.FormBorderStyle = FormBorderStyle.Sizable; // Hiện lên thanh tiêu đề của cửa sổ
+            this.StartPosition = FormStartPosition.CenterScreen; // Căn cửa sổ vào giữa màn hình
+
+            this.BackgroundImage = Properties.Resources.background2; // Đặt hình nền cho form.
             this.BackgroundImageLayout = ImageLayout.Stretch;
 
-            random = new Random();
+            random = new Random();// Khởi tạo đối tượng Random để tạo số ngẫu nhiên.
 
-            // Labels for score, high score, and timer
+            // Tạo các nhãn (Labels) cho thời gian, điểm và điểm cao.
             Label lblTime = new Label
             {
                 Text = $"Time: {timeLeft}s",
@@ -78,18 +125,19 @@ namespace Form1
                 Location = new Point(20, 100),
                 AutoSize = true
             };
-            lblHighScore.Name = "lblHighScore";  // This makes it accessible by name
+            lblHighScore.Name = "lblHighScore"; 
             this.Controls.Add(lblHighScore);
 
-            CreateTrashBin("chatlong", Properties.Resources.thungracchatlong, new Point(30, 400));
-            CreateTrashBin("thucphamthua", Properties.Resources.thungrachuuco, new Point(190, 400));
-            CreateTrashBin("kimloai", Properties.Resources.thungrackimloai, new Point(350, 400));
-            CreateTrashBin("nhuataiche", Properties.Resources.thungracnhua, new Point(510, 400));
-            CreateTrashBin("giay", Properties.Resources.thungracgiay, new Point(670, 400));
-            CreateTrashBin("hopsua", Properties.Resources.thungrachopsua, new Point(830, 400));
-            CreateTrashBin("racthaiconlai", Properties.Resources.thungracconlai, new Point(990, 400));
+            // Tạo các thùng rác.
+            CreateTrashBin("chatlong", Properties.Resources.thungracchatlong, new Point(30, 600));
+            CreateTrashBin("thucphamthua", Properties.Resources.thungrachuuco, new Point(230, 600));
+            CreateTrashBin("kimloai", Properties.Resources.thungrackimloai, new Point(430, 600));
+            CreateTrashBin("nhuataiche", Properties.Resources.thungracnhua, new Point(630, 600));
+            CreateTrashBin("giay", Properties.Resources.thungracgiay, new Point(830, 600));
+            CreateTrashBin("hopsua", Properties.Resources.thungrachopsua, new Point(1030, 600));
+            CreateTrashBin("racthaiconlai", Properties.Resources.thungracconlai, new Point(1230, 600));
 
-            trashCategoryMapping = new Dictionary<string, string>
+            /*trashCategoryMapping = new Dictionary<string, string>
             {
                 { "tao", "thucphamthua" },
             { "xuongca", "thucphamthua" },
@@ -126,7 +174,7 @@ namespace Form1
             { "conlai3", "racthaiconlai" },
             { "conlai5", "racthaiconlai" },
             { "conlai8", "racthaiconlai" }
-            };
+            };*/
 
             trash = new PictureBox
             {
@@ -138,6 +186,18 @@ namespace Form1
             AssignNewTrash();
 
             this.KeyDown += MainForm_KeyDown;
+
+            // Hiển thị hộp thoại cung cấp cho người chơi kiến thức phân loại rác
+            MessageBox.Show
+             (
+                "Chất lỏng: là chất lỏng hữu cơ không cặn và tinh hòa, tan cao như nước, sữa, cà phê, nước ngọt, nước trái cây, nước tương,... \n\n" +
+                "Thực phẩm thừa: là những thực phẩm đã qua chế biến, chất lỏng hữu cơ có cặn, rác sân vườn.\n\n" +
+                "Kim loại: bao gồm hộp thực phẩm, nước ngọt làm bằng kim loại và các phế phẩm kim loại khác, đinh, ốc\n\n" +
+                "Nhựa tái chế: gồm có chai, lọ, hộp nhựa, ống hút nhựa, muỗng nĩa ăn bằng nhựa\n\n" +
+                "Giấy: giấy báo, giấy vở, sách, bìa carton, túi giấy, ly giấy, tạp chí\n\n" +
+                "Hộp sữa: bao gồm những loại hộp sữa giấy\n\n" +
+                "Rác thải còn lại: túi nilon, hộp xốp, dụng cụ ăn uống, gỗ, khăn giấy, khẩu trang, chai lọ, mảnh vỡ thủy tinh và thiết bị điện tử", "Kiến thức cần nhớ cho vòng 3\n\n"
+             );
 
         }
         private Image ResizeImageMaintainAspect(Image img, int maxWidth, int maxHeight)
@@ -169,19 +229,20 @@ namespace Form1
         {
             PictureBox bin = new PictureBox
             {
-                Size = new Size(200, 300),
-                Location = location,
-                Image = ResizeImageMaintainAspect(image, 200, 300),
+                Size = new Size(200, 300),// Kích thước thùng rác.
+                Location = location,// Vị trí thùng rác.
+                Image = ResizeImageMaintainAspect(image, 200, 300), // Chỉnh kích cỡ ảnh thùng rác giữ nguyên tỷ lệ.
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                Tag = name,
+                Tag = name, // Gán tên thùng rác để phân biệt.
                 BackColor = Color.Transparent
             };
-            this.Controls.Add(bin);
+
+            this.Controls.Add(bin); // Thêm thùng rác vào form.
         }
 
         private void AssignNewTrash()
         {
-            var randomTrash = trashCategoryMapping.ElementAt(random.Next(trashCategoryMapping.Count));
+            /*var randomTrash = trashCategoryMapping.ElementAt(random.Next(trashCategoryMapping.Count));
             string trashImageName = randomTrash.Key;
             correctBin = randomTrash.Value;
 
@@ -197,49 +258,74 @@ namespace Form1
             {
                 MessageBox.Show($"Trash image not found for: {trashImageName}");
                 return;
+            }*/
+
+            // Lấy một chỉ số ngẫu nhiên từ mảng đa chiều
+            int row = random.Next(0, trashItems.GetLength(0)); // Chọn hàng ngẫu nhiên
+            int col = random.Next(0, trashItems.GetLength(1)); // Chọn cột ngẫu nhiên
+
+            TrashItem randomTrash = trashItems[row, col]; // Lấy rác ngẫu nhiên
+
+            // Gán loại thùng chứa đúng cho loại rác này
+            correctBin = randomTrash.Bin;
+
+            // Cập nhật hình ảnh rác
+            Image trashImage = (Image)Properties.Resources.ResourceManager.GetObject(randomTrash.Name);
+            if (trashImage != null)
+            {
+                trash.Image = ResizeImageMaintainAspect(trashImage, 100, 100);
+                trash.Size = new Size(100, 100);
+                trash.SizeMode = PictureBoxSizeMode.StretchImage;
+                trash.BackColor = Color.Transparent;
+            }
+            else
+            {
+                MessageBox.Show($"Trash image not found for: {randomTrash.Name}");
+                return;
             }
 
             trash.Left = random.Next(100, this.Width - trash.Width);
             trash.Top = 50;
         }
+
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.A && trash.Left > 0)
+            if (e.KeyCode == Keys.A && trash.Left > 0) // Di chuyển rác sang trái.
             {
                 trash.Left -= 40;
             }
-            else if (e.KeyCode == Keys.D && trash.Right < this.Width)
+            else if (e.KeyCode == Keys.D && trash.Right < this.Width) // Di chuyển rác sang phải.
             {
                 trash.Left += 40;
             }
-            else if (e.KeyCode == Keys.S)
+            else if (e.KeyCode == Keys.S) // Khi nhấn S, rác rơi xuống.
             {
                 trash.Top += 40;
-                if (trash.Bounds.Bottom >= this.Height - 200) // Near bins
+                if (trash.Bounds.Bottom >= this.Height - 200) // Khi rác gần thùng.
                 {
                     foreach (Control ctrl in this.Controls)
                     {
-                        if (ctrl is PictureBox bin && trash.Bounds.IntersectsWith(bin.Bounds))
+                        if (ctrl is PictureBox bin && trash.Bounds.IntersectsWith(bin.Bounds)) // Kiểm tra xem rác có chạm thùng nào không.
                         {
-                            if (bin.Tag != null) // Check if Tag is not null
+                            if (bin.Tag != null) // Nếu thùng có Tag.
                             {
-                                CheckCorrectBin(bin.Tag.ToString());
+                                CheckCorrectBin(bin.Tag.ToString()); // Kiểm tra xem rác có vào đúng thùng không.
                             }
                             else
                             {
-                                MessageBox.Show("Error: Tag not set for a bin PictureBox.");
+                                MessageBox.Show("Error: Tag not set for a bin PictureBox."); // Thông báo lỗi nếu thùng không có Tag.
                             }
                             break;
                         }
                     }
-                    trash.Top = 50;
-                    trash.Left = random.Next(100, 600);
-                    AssignNewTrash();
+                    trash.Top = 50; // Đưa rác trở lại vị trí ban đầu.
+                    trash.Left = random.Next(100, 600); // Đặt vị trí ngẫu nhiên cho rác.
+                    AssignNewTrash(); // Gán loại rác mới.
                 }
             }
         }
 
-        private void LoadHighScore()
+        private void LoadHighScore() //Tải điểm cao từ file (nếu có). Nếu file không tồn tại, tạo file mới và đặt điểm cao là 0.
         {
             try
             {
@@ -247,19 +333,32 @@ namespace Form1
                 {
                     highScore = int.Parse(File.ReadAllText("highscore_case2.txt"));
                 }
+                else
+                {
+                    //Tạo file nếu file chưa tồn tại 
+                    File.WriteAllText("highscore_case2.txt", "0");
+                    highScore = 0;
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                MessageBox.Show("Could not read high scores: " + ex);
                 highScore = 0;
             }
         }
 
-        private void SaveHighScore()
+        private void SaveHighScore() //Lưu điểm cao vào file.
         {
-            if (score > highScore)
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscore_case2.txt");
+
+            try
             {
                 highScore = score;
-                File.WriteAllText("highscore_case2.txt", highScore.ToString());
+                File.WriteAllText(filePath, highScore.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving high score: {ex.Message}");
             }
         }
 
@@ -271,26 +370,26 @@ namespace Form1
             gameTimer.Start();
         }
 
-        private async void CheckCorrectBin(string bin)
+        private async void CheckCorrectBin(string bin) //Kiểm tra xem rác có vào đúng thùng hay không, và cập nhật điểm số.
         {
             PictureBox binControl = this.Controls.OfType<PictureBox>().FirstOrDefault(p => p.Tag.ToString() == bin);
             if (binControl != null)
             {
-                if (string.Equals(bin, correctBin, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(bin, correctBin, StringComparison.OrdinalIgnoreCase)) // Kiểm tra nếu thùng đúng.
                 {
                     score += 10;
                     this.Controls["lblScore"].Text = $"Score: {score}";
-                    binControl.BackColor = Color.LightGreen;
+                    binControl.BackColor = Color.LightGreen;  // Thùng có màu xanh nếu đúng.
                 }
                 else
                 {
-                    binControl.BackColor = Color.IndianRed;
+                    binControl.BackColor = Color.IndianRed; // Màu đỏ nếu sai.
                 }
 
-                // Wait briefly to show feedback
+                // Đợi 500ms để người chơi nhìn thấy phản hồi.
                 await Task.Delay(500);
 
-                // Reset border and background color
+                // Đặt lại màu nền của thùng.
                 binControl.BackColor = Color.Transparent;
             }
         }
@@ -301,11 +400,11 @@ namespace Form1
             {
                 gameTimer.Stop();
 
-                // Check if the current score is higher than the high score
+                // Kiểm tra nếu điểm cao hơn điểm cao trước.
                 if (score > highScore)
                 {
-                    highScore = score;  // Update the high score
-                    SaveHighScore();    // Save the new high score
+                    highScore = score;  // Cập nhật điểm cao.
+                    SaveHighScore();    
                 }
 
                 // Update the high score label
@@ -313,21 +412,21 @@ namespace Form1
 
 
                 // Close the form (exit the game window)
-                if (score >= 70)
+                if (score >= 90)
                 {
                     MessageBox.Show($"Time's up! Your score is {score}");
-                    this.Close();
+                    this.Close(); // Đóng cửa sổ khi trò chơi kết thúc.
                 }
                 else
                 {
-                    MessageBox.Show("Score below 70. Restarting Round 2.");
-                    RestartGame();
+                    MessageBox.Show("Score below 90. Restarting Round 2.");
+                    RestartGame(); // Khởi động lại trò chơi nếu điểm dưới 90.
                 }
             }
             else
             {
-                timeLeft--;
-                this.Controls["lblTime"].Text = $"Time: {timeLeft}s";
+                timeLeft--; // Giảm thời gian mỗi giây.
+                this.Controls["lblTime"].Text = $"Time: {timeLeft}s"; // Cập nhật hiển thị thời gian.
             }
         }
         private void RestartGame()
