@@ -82,8 +82,6 @@ namespace Form1
 
         private void InitializeGame()
         {
-            // Show the "Hello!" message box when the game starts
-            MessageBox.Show("Hello!");
 
             this.Text = "Lớp Chồi - Vòng 3"; // Tiêu đề của cửa sổ.
             this.Size = new Size(1800, 1000); // Kích thước cửa sổ.
@@ -329,7 +327,7 @@ namespace Form1
                 }
 
                 // Đợi 500ms để người chơi nhìn thấy phản hồi.
-                await Task.Delay(500);
+                await Task.Delay(3000);
 
                 // Đặt lại màu nền của thùng.
                 binControl.BackColor = Color.Transparent;
@@ -349,11 +347,11 @@ namespace Form1
                     SaveHighScore();    
                 }
 
-                // Update the high score label
+                // Cập nhật điểm cao
                 this.Controls["lblHighScore"].Text = $"High Score: {highScore}";
 
 
-                // Close the form (exit the game window)
+                // Đóng form
                 if (score >= 90)
                 {
                     MessageBox.Show($"Time's up! Your score is {score}");

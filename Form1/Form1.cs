@@ -263,22 +263,29 @@ namespace Form1
 
 
 
-
-
-        //Start quizz bình thường
+        //Bắt đầu Quiz bình thường
         private void StartQuiz()
         {
-            currentQuestionIndex = 0; // Đảm bảo bắt đầu từ câu hỏi đầu tiên
-            ShowQuizQuestion(currentQuestionIndex); // Bắt đầu từ câu hỏi đầu tiên
+            // Reset tất cả các biến cần thiết cho vòng chơi mới
+            quizScore = 0;
+            currentQuizQuestion = 0;
+            timeLeft = 20;
+            answered = false;
+
+            // Cập nhật giao diện người dùng (UI)
+            lblScore.Text = $"Score: {quizScore}";
+            lblTime.Text = $"Time: {timeLeft}s";
+
+            // Hiển thị câu hỏi đầu tiên
+            ShowQuizQuestion(currentQuizQuestion);
+            gameTimer.Start(); // Bắt đầu bộ đếm thời gian cho vòng chơi mới
         }
-
-
 
         private void CheckAnswer(string selectedAnswer, int questionIndex)
         {
-            if (timeLeft == 0) return; // Ngưng khi thời gian kết thúc
+            if (timeLeft == 0) return; // Kết thúc nếu hết thời gian
 
-            // Kiểm tra xem câu trả lời có đúng không
+            // Kiểm tra nếu câu trả lời đúng
             if (selectedAnswer == correctAnswers[currentQuizQuestion])
             {
                 quizScore += 10;  // Cộng điểm nếu trả lời đúng
@@ -289,41 +296,39 @@ namespace Form1
                 MessageBox.Show($"Sai rồi! 😞 Đáp án đúng là: {correctAnswers[currentQuizQuestion]}", "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
-            // Đặt cờ answered là true nhằm ngăn chặn việc trả lời nhiều lần cho cùng một câu hỏi
+            // Đánh dấu câu hỏi đã được trả lời
             answered = true;
 
-            // Cập nhật nhãn lblScore
+            // Cập nhật hiển thị điểm số
             lblScore.Text = $"Score: {quizScore}";
 
-            // Dừng đếm giờ và chuyển qua câu tiếp theo
+            // Dừng bộ đếm thời gian
             gameTimer.Stop();
 
-            // Chuyển câu hỏi tiếp theo
+            // Chuyển sang câu hỏi tiếp theo
             currentQuizQuestion++;
 
-
-            // Nếu không còn câu hỏi nào nữa thì tính lại điểm
+            // Kiểm tra nếu Quiz đã hoàn thành
             if (currentQuizQuestion >= questions.Length)
             {
-                // Sau khi trả lời hết câu hỏi, kiểm tra điểm có đủ điều kiện để qua màn tiếp theo không
+                // Đánh giá xem người chơi có vượt qua vòng chơi hay không
                 if (quizScore >= 50)
                 {
                     MessageBox.Show($"Hoàn thành Quiz! Bạn đã đạt điểm đủ: {quizScore}/{questions.Length * 10}.", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    StartTrashSortingGame();  // Chuyển qua màn Trash Sorting
+                    StartTrashSortingGame();  // Tiếp tục sang màn chơi tiếp theo
                 }
                 else
                 {
                     MessageBox.Show($"Điểm của bạn là {quizScore}/{questions.Length * 10}. Bạn chưa đủ điểm để qua màn!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    StartQuiz();  // Bắt đầu lại quiz
+                    StartQuiz();  // Bắt đầu lại Quiz
                 }
-
-                quizScore = 0;  // Reset điểm cho vòng kế tiếp
             }
             else
             {
-                timeLeft = 20;  // Reset đồng hồ cho câu tiếp theo
-                gameTimer.Start();  // Bắt đầu đếm giờ
-                ShowQuizQuestion(currentQuizQuestion);  // Chiếu câu hỏi tiếp theo
+                // Reset thời gian và hiển thị câu hỏi tiếp theo
+                timeLeft = 20;
+                gameTimer.Start();
+                ShowQuizQuestion(currentQuizQuestion);
             }
         }
 

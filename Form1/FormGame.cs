@@ -26,7 +26,7 @@ namespace Form1
         private int score = 0; // Điểm số hiện tại của người chơi.  
         private int highScore = 0; // Điểm số cao nhất được lưu từ trước đó.
         private int timeLeft = 30; // Thời gian còn lại của trò chơi, tính bằng giây.
-        private string[] trashTypes = { "chatlong", "kimloai", "thucphamthua", "nhuataiche", "giay", "hopsua", "racthaiconlai" }; // Danh sách các loại rác có thể xuất hiện trong trò chơi.
+        private string[] trashTypes = { "chatlong", "kimloai", "thucphamthua", "nhuataiche", "giay", "hopsua", "racthaiconlai" }; // Danh sách các loại rác có thể xuất hiện trong trò chơi, mảng một chiều
         private Random random; // Sinh số ngẫu nhiên để chọn vị trí và loại rác.
         private string correctBin; // Thùng rác đúng cần phân loại cho rác hiện tại
 
